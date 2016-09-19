@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             finish();
-
         }
     };
 

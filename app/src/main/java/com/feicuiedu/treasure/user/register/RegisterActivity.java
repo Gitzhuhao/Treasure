@@ -1,8 +1,10 @@
 package com.feicuiedu.treasure.user.register;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -10,6 +12,7 @@ import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.feicuiedu.treasure.MainActivity;
 import com.feicuiedu.treasure.R;
 import com.feicuiedu.treasure.commons.ActivityUtils;
 import com.feicuiedu.treasure.commons.RegexUtils;
@@ -102,6 +105,12 @@ public class RegisterActivity extends MvpActivity<RegisterView, RegisterPresente
     @Override
     public void navigateToHome() {
         activityUtils.startActivity(HomeActivity.class);
+        finish();
+
+        // 关闭MainActivity，发送一个广播，本地广播
+        Intent intent = new Intent(MainActivity.ACTION_ENTER_HOME);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+
     }
 
     private ProgressDialog progressDialog;
@@ -160,5 +169,11 @@ public class RegisterActivity extends MvpActivity<RegisterView, RegisterPresente
         String msg = getString(R.string.password_rules);
         AlertDialogFragment fragment = AlertDialogFragment.newInstance(R.string.password_error, msg);
         fragment.show(getSupportFragmentManager(), "showPasswordError");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
     }
 }

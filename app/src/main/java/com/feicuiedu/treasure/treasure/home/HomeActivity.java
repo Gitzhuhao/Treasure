@@ -45,7 +45,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         TreasureRepo.getInstance().clear();
     }
 
-    @Override protected void onStart() {
+    @Override
+    protected void onStart() {
         super.onStart();
         // 每次重新回到Home，更新用户头像
         String photoUrl = UserPrefs.getInstance().getPhoto();
@@ -54,7 +55,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override public void onContentChanged() {
+    @Override
+    public void onContentChanged() {
         super.onContentChanged();
         ButterKnife.bind(this);
         //
@@ -75,7 +77,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         imageView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.iv_userIcon);
     }
 
-    @Override public boolean onNavigationItemSelected(MenuItem item) {
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_hide: // 埋藏宝藏
                 drawerLayout.closeDrawer(GravityCompat.START);
@@ -85,21 +88,32 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    @Override public void onBackPressed() {
-//        // DrawerLayout是开的
-//        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-//            drawerLayout.closeDrawer(GravityCompat.START);
-//        }
-//        // DrawerLayout是关的
-//        else{
-//            if (mapFragment.clickBackPressed()) {
-//                super.onBackPressed();
-//            }
-//        }
+    @Override
+    public void onBackPressed() {
+        /*// DrawerLayout是开的
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        // DrawerLayout是关的
+        else{
+            if (mapFragment.clickBackPressed()) {
+                super.onBackPressed();
+            }
+        }*/
+
+        // DrawerLayout是开的
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        }
+        // DrawerLayout是关的
+        else {
+            super.onBackPressed();
+        }
     }
 
     // 准备
-    @Override public boolean onPrepareOptionsMenu(Menu menu) {
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_toggle);
         // 正在用List的方式显示
 
@@ -107,12 +121,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
     // 创建
-    @Override public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home,menu);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
+
     // 选择
-    @Override public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_toggle:
                 showListFragment();
