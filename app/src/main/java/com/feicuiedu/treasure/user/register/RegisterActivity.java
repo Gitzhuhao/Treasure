@@ -12,7 +12,10 @@ import android.widget.EditText;
 
 import com.feicuiedu.treasure.R;
 import com.feicuiedu.treasure.commons.ActivityUtils;
+import com.feicuiedu.treasure.commons.RegexUtils;
+import com.feicuiedu.treasure.components.AlertDialogFragment;
 import com.feicuiedu.treasure.treasure.home.HomeActivity;
+import com.feicuiedu.treasure.user.User;
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 
 import butterknife.Bind;
@@ -124,5 +127,38 @@ public class RegisterActivity extends MvpActivity<RegisterView, RegisterPresente
     public void onClick() {
 
         // 去执行操作，验证注册的信息
+        activityUtils.hideSoftKeyboard();
+
+        // 验证密码是否符合要求
+        if (RegexUtils.verifyPassword(password)!=RegexUtils.VERIFY_SUCCESS){
+            showPasswordError();
+            return;
+        }
+
+        // 验证用户名
+        if (RegexUtils.verifyUsername(username)!=RegexUtils.VERIFY_SUCCESS){
+            showUsernameError();
+            return;
+        }
+
+        // 如果都符合要求，去执行业务
+        getPresenter().register(new User(username,password));
+
+    }
+
+
+
+    // 用户名输入错误Dialog
+    private void showUsernameError() {
+        String msg = getString(R.string.username_rules);
+        AlertDialogFragment fragment = AlertDialogFragment.newInstance(R.string.username_error, msg);
+        fragment.show(getSupportFragmentManager(), "showUsernameError");
+    }
+
+    // 密码输入错误Dialog
+    private void showPasswordError() {
+        String msg = getString(R.string.password_rules);
+        AlertDialogFragment fragment = AlertDialogFragment.newInstance(R.string.password_error, msg);
+        fragment.show(getSupportFragmentManager(), "showPasswordError");
     }
 }
