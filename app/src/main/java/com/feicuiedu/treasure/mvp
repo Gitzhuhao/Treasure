@@ -1,0 +1,16 @@
+1. 如何实现业务分离
+2. Mosby 库的使用
+    1. 依赖
+    2. Activity   MvpActivity<LoginView,LoginPresenter> implements LoginView
+        Presenter LoginPresenter extends MvpNullObjectBasePresenter<LoginView>
+        View接口  LoginView extends MvpView
+3. 登录、注册
+
+
+1. 创建一个baidumap 模块 app 依赖于他
+2. baidumap libs 添加jar包 build.gradle 里面去指定so路径
+3. app 模块下面固定的debug.keystore build.gradle 去指定
+    拿到SHA1值 + 包名---------key
+    清单文件中
+    定位，加一个定位的Service组件
+
