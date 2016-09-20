@@ -124,19 +124,19 @@
         <!--用来显示宝藏信息的fragment-->
         <!--android:visibility="gone"-->
 
-        <!--<FrameLayout
+        <FrameLayout
             android:id="@+id/layout_bottom"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_100"
             android:visibility="gone">
-            &lt;!&ndash;用来显示宝藏信息的卡片(选中藏宝时)&ndash;&gt;
+            <!--用来显示宝藏信息的卡片(选中藏宝时)-->
             <com.feicuiedu.treasure.components.TreasureView
                 android:id="@+id/treasureView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"/>
 
-            &lt;!&ndash;用来录入宝藏信息的卡片(藏宝时)&ndash;&gt;
+            <!--用来录入宝藏信息的卡片(藏宝时)-->
             <include
                 android:id="@+id/hide_treasure"
                 layout="@layout/hide_treasure"
@@ -144,7 +144,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:visibility="gone"/>
-        </FrameLayout>-->
+        </FrameLayout>
 
     </LinearLayout>
 

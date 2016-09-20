@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -22,6 +24,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
 import com.feicuiedu.treasure.R;
+import com.feicuiedu.treasure.components.TreasureView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -34,6 +37,16 @@ public class MapFragment extends Fragment {
 
     @Bind(R.id.map_frame)
     FrameLayout mapFrame;
+    @Bind(R.id.centerLayout)
+    RelativeLayout centerLayout;
+    @Bind(R.id.treasureView)
+    TreasureView treasureView;
+    @Bind(R.id.layout_bottom)
+    FrameLayout layoutBottom;
+    @Bind(R.id.hide_treasure)
+    RelativeLayout hideTreasure;
+    @Bind(R.id.btn_HideHere)
+    Button btnHideHere;
     private MapView mapView;
     private BaiduMap baiduMap;
     private LocationClient locationClient;
@@ -226,5 +239,58 @@ public class MapFragment extends Fragment {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
+    private static final int UI_MODE_NORMAL = 0;// 普通视图
+    private static final int UI_MODE_SELECT = 1;// 宝藏选中视图
+    private static final int UI_MODE_HIDE = 2;// 埋藏宝藏视图
+
+    private int uiMode = UI_MODE_NORMAL;
+
+    // 切换不同的视图模式
+    private void changeUiMode(int uiMode) {
+
+        if (this.uiMode == uiMode) {
+            return;
+        }
+        this.uiMode = uiMode;
+        switch (uiMode) {
+
+            // 普通模式视图
+            case UI_MODE_NORMAL: {
+                layoutBottom.setVisibility(View.GONE);
+                centerLayout.setVisibility(View.GONE);
+            }
+            break;
+
+            // 选中模式视图
+            case UI_MODE_SELECT: {
+                layoutBottom.setVisibility(View.VISIBLE);
+                treasureView.setVisibility(View.VISIBLE);
+                centerLayout.setVisibility(View.GONE);
+                hideTreasure.setVisibility(View.GONE);
+            }
+            break;
+
+            // 埋藏模式视图
+            case UI_MODE_HIDE: {
+
+                centerLayout.setVisibility(View.VISIBLE);
+                layoutBottom.setVisibility(View.VISIBLE);
+                // 按下藏在这里按钮的时候会显示
+                btnHideHere.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        layoutBottom.setVisibility(View.VISIBLE);
+                        hideTreasure.setVisibility(View.VISIBLE);
+                        treasureView.setVisibility(View.GONE);
+                    }
+                });
+
+            }
+            break;
+        }
+
+    }
+
 
 }

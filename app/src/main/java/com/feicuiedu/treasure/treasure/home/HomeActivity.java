@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import com.feicuiedu.treasure.R;
 import com.feicuiedu.treasure.commons.ActivityUtils;
 import com.feicuiedu.treasure.treasure.TreasureRepo;
+import com.feicuiedu.treasure.treasure.home.list.TreasureListFragment;
+import com.feicuiedu.treasure.treasure.home.map.MapFragment;
 import com.feicuiedu.treasure.user.UserPrefs;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -34,6 +36,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private ImageView imageView;
 
+    private MapFragment mapFragment;
+    private TreasureListFragment listFragment;
+
     private FragmentManager fragmentManager;
 
     @Override
@@ -42,6 +47,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         activityUtils = new ActivityUtils(this);
         setContentView(R.layout.activity_home);
         fragmentManager = getSupportFragmentManager();
+        mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.mapFragment);
         TreasureRepo.getInstance().clear();
     }
 
@@ -116,7 +122,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item = menu.findItem(R.id.action_toggle);
         // 正在用List的方式显示
-
+        if (listFragment!=null && listFragment.isAdded()){
+            item.setIcon(R.drawable.ic_map);
+        }else {
+            item.setIcon(R.drawable.ic_view_list);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -142,15 +152,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     private void showListFragment() {
         // 当前显示的就是List
-//        if(listFragment != null && listFragment.isAdded()) {
-//            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//            fragmentManager.beginTransaction().remove(listFragment).commit();
-//            return;
-//        }
-//        listFragment = new TreasureListFragment();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.fragment_container, listFragment)
-//                .addToBackStack(null)
-//                .commit();
+        if(listFragment != null && listFragment.isAdded()) {
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            fragmentManager.beginTransaction().remove(listFragment).commit();
+            return;
+        }
+        listFragment = new TreasureListFragment();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, listFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
