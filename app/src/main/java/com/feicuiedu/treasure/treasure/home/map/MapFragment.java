@@ -9,10 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.model.LatLng;
 import com.feicuiedu.treasure.R;
 
 import butterknife.Bind;
@@ -27,6 +35,9 @@ public class MapFragment extends Fragment {
     FrameLayout mapFrame;
     private MapView mapView;
     private BaiduMap baiduMap;
+    private LocationClient locationClient;
+    private String myAddress;
+    private LatLng myLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,8 +54,34 @@ public class MapFragment extends Fragment {
 
         // 初始化百度地图
         initBaiduMap();
+
+        // 初始化定位
+        initLocation();
     }
 
+    private void initLocation() {
+        // 激活定位图层
+        baiduMap.setMyLocationEnabled(true);
+        // 定位实例化
+        locationClient = new LocationClient(getActivity().getApplicationContext());
+
+        // 进行一些定位的一般常规性设置
+        LocationClientOption option = new LocationClientOption();
+        option.setOpenGps(true); // 打开GPS
+        option.setScanSpan(60000);// 扫描周期,设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setCoorType("bd09ll");// 百度坐标类型
+        option.setLocationNotify(true);//设置是否当gps有效时按照1S1次频率输出GPS结果
+        option.SetIgnoreCacheException(false);//设置是否收集CRASH信息，默认收集
+        option.setIsNeedAddress(true);// 设置是否需要地址信息，默认不需要
+        option.setIsNeedLocationDescribe(true);//设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        locationClient.setLocOption(option);
+
+        // 注册定位监听
+        locationClient.registerLocationListener(locationListener);
+        // 开始定位
+        locationClient.start();
+        locationClient.requestLocation(); // 请求位置(解决部分机器,初始定位不成功问题)
+    }
 
     private void initBaiduMap() {
 
@@ -79,6 +116,52 @@ public class MapFragment extends Fragment {
 
     }
 
+    private BDLocationListener locationListener = new BDLocationListener() {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+
+            // 定位有没有成功
+            if (bdLocation==null){
+                locationClient.requestLocation();
+                return;
+            }
+
+            double lng = bdLocation.getLongitude();// 经度
+            double lat = bdLocation.getLatitude();// 维度
+
+            // 获取地址信息
+            myAddress = bdLocation.getAddrStr();
+
+            // 获取经纬度
+            myLocation = new LatLng(lat,lng);
+
+            // 拿到定位的信息（经纬度）
+            MyLocationData myLocationData = new MyLocationData.Builder()
+                    .longitude(lng)
+                    .latitude(lat)
+                    .accuracy(100f)//精度，定位圈的大小
+                    .build();
+            //设置到地图上
+            baiduMap.setMyLocationData(myLocationData);
+            animateMoveToMyLocation();
+        }
+    };
+
+    // 移动到定位的地方
+    public void animateMoveToMyLocation() {
+        MapStatus mapStatus = new MapStatus.Builder()
+                .target(myLocation)
+                .rotate(0)// 地图位置摆正
+                .zoom(19)
+                .build();
+
+        // 状态(新的位置信息)进行更新
+        MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(mapStatus);
+        baiduMap.animateMapStatus(update);
+    }
+
+    private LatLng target;
+
     // 百度地图状态的监听
     private BaiduMap.OnMapStatusChangeListener mapStatusChangeListener = new BaiduMap.OnMapStatusChangeListener() {
         @Override
@@ -94,6 +177,8 @@ public class MapFragment extends Fragment {
         @Override
         public void onMapStatusChangeFinish(MapStatus mapStatus) {
             // 状态改变完成
+            LatLng target = mapStatus.target;
+            MapFragment.this.target = target;
         }
     };
 
