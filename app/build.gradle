@@ -26,8 +26,8 @@ android {
     }
 
     /** 数据签名配置: 使用本模块(app)下的debug.keystore*/
-    signingConfigs{
-        debug{
+    signingConfigs {
+        debug {
             storeFile file("debug.keystore")
         }
     }
@@ -41,6 +41,7 @@ dependencies {
     //
     // YOYO动画库
     //
+    compile project(':baidumap')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
@@ -58,5 +59,4 @@ dependencies {
     compile 'jp.wasabeef:recyclerview-animators:2.2.3'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile project(':baidumap')
 }

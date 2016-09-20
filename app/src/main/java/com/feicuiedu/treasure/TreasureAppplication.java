@@ -19,6 +19,7 @@ public class TreasureAppplication extends Application {
 
         UserPrefs.init(this);
 
+        // 对百度地图SDK初始化
         SDKInitializer.initialize(this);
 
         initImageLoader();
