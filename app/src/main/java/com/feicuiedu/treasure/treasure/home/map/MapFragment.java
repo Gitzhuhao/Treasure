@@ -25,6 +25,7 @@ import com.feicuiedu.treasure.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  *
@@ -103,10 +104,10 @@ public class MapFragment extends Fragment {
                 ;
 
         // 创建一个MapView
-        mapView = new MapView(getContext(),options);
+        mapView = new MapView(getContext(), options);
 
         // 在当前的Layout上面添加MapView
-        mapFrame.addView(mapView,0);
+        mapFrame.addView(mapView, 0);
 
         // MapView 的控制器
         baiduMap = mapView.getMap();
@@ -116,12 +117,14 @@ public class MapFragment extends Fragment {
 
     }
 
+    private boolean isFirstLocated = true;// 用来判断是不是首次定位
+
     private BDLocationListener locationListener = new BDLocationListener() {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
 
             // 定位有没有成功
-            if (bdLocation==null){
+            if (bdLocation == null) {
                 locationClient.requestLocation();
                 return;
             }
@@ -133,7 +136,7 @@ public class MapFragment extends Fragment {
             myAddress = bdLocation.getAddrStr();
 
             // 获取经纬度
-            myLocation = new LatLng(lat,lng);
+            myLocation = new LatLng(lat, lng);
 
             // 拿到定位的信息（经纬度）
             MyLocationData myLocationData = new MyLocationData.Builder()
@@ -143,11 +146,16 @@ public class MapFragment extends Fragment {
                     .build();
             //设置到地图上
             baiduMap.setMyLocationData(myLocationData);
-            animateMoveToMyLocation();
+
+            if (isFirstLocated) {
+                animateMoveToMyLocation();
+                isFirstLocated = false;
+            }
         }
     };
 
     // 移动到定位的地方
+    @OnClick(R.id.tv_located)
     public void animateMoveToMyLocation() {
         MapStatus mapStatus = new MapStatus.Builder()
                 .target(myLocation)
@@ -159,6 +167,37 @@ public class MapFragment extends Fragment {
         MapStatusUpdate update = MapStatusUpdateFactory.newMapStatus(mapStatus);
         baiduMap.animateMapStatus(update);
     }
+
+    // 地图类型的切换（普通视图--卫星视图）
+    @OnClick(R.id.tv_satellite)
+    public void switchMapType() {
+
+        // 先获得当前的类型
+        int type = baiduMap.getMapType();
+        type = type == BaiduMap.MAP_TYPE_NORMAL ? BaiduMap.MAP_TYPE_SATELLITE : BaiduMap.MAP_TYPE_NORMAL;
+        baiduMap.setMapType(type);
+    }
+
+    // 指南针
+    @OnClick(R.id.tv_compass)
+    public void switchCompass() {
+        boolean isCompass = baiduMap.getUiSettings().isCompassEnabled();
+        baiduMap.getUiSettings().setCompassEnabled(!isCompass);
+    }
+
+    // 地图缩放
+    @OnClick({R.id.iv_scaleUp, R.id.iv_scaleDown})
+    public void scaleMap(View view) {
+        switch (view.getId()) {
+            case R.id.iv_scaleUp:
+                baiduMap.setMapStatus(MapStatusUpdateFactory.zoomIn());
+                break;
+            case R.id.iv_scaleDown:
+                baiduMap.setMapStatus(MapStatusUpdateFactory.zoomOut());
+                break;
+        }
+    }
+
 
     private LatLng target;
 
@@ -187,4 +226,5 @@ public class MapFragment extends Fragment {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
+
 }
